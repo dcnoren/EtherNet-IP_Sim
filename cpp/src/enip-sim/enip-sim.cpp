@@ -6,9 +6,6 @@
 #include <stdio.h>
 #include <winsock2.h>
 
-#define SESSION_REQ 0x65
-#define SET_ATTR_SINGLE 0x6F
-
 #pragma comment(lib,"ws2_32.lib")
 
 int main(int argc, char* argv[])
@@ -46,11 +43,22 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
+	// Initialize a bunch of variables we will use
+
+	// enip_conn
+	char register_session_resp[28] = { 0x65, 0x00, 0x04, 0x00, 0xEF, 0xBE, 0xAD, 0xDE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00 };
+
 	//loop
 	SOCKET sClient;
 	sockaddr_in remoteAddr;
 	int nAddrlen = sizeof(remoteAddr);
-	char revData[255];
+	size_t packetHeadBufLen = 0;
+	char packetHeadBuf[24];
+	unsigned char packetHead[24];
+	size_t describedDataLen = 0;
+	size_t packetDataBufLen = 0;
+	char packetDataBuf[65511];
+	unsigned char packetData[65511];
 	while (true)
 	{
 		
@@ -62,14 +70,14 @@ int main(int argc, char* argv[])
 		}
 
 		//Get Data
-		memset(&revData[0], 0, 255);
-		revData[0];
+		memset(&packetHeadBuf[0], 0, 24);
+		packetHeadBuf[0];
 
 		int ret;
 
 		while (true){
 
-			ret = recv(sClient, revData, 255, 0);
+			ret = recv(sClient, packetHeadBuf, 24, 0);
 			Sleep(10);
 
 			if (ret == 0)
@@ -78,52 +86,340 @@ int main(int argc, char* argv[])
 				ExitThread(0);
 			}
 
-			if (ret > 0)
+			if (ret > 0 && ret <= 24)
 			{
+				
+				if (ret == 24) {
+					memcpy(packetHead, packetHeadBuf, 24);
+				}
+				else {
+					printf("\r\nDidn't get all 24 bytes");
+					printf("\r\nCaptured: ");
+					printf("%u", ret);
+					packetHeadBufLen = ret;
+					size_t packetHeadBufPtr = 0;
+					size_t packetHeadBufRem;
+					packetHeadBufRem = 24 - ret;
+					memcpy(packetHead + packetHeadBufPtr, packetHeadBuf, ret);
+					packetHeadBufPtr = packetHeadBufPtr + ret;
+					
+					memset(&packetHeadBuf[0], 0, 24);
+					packetHeadBuf[0];
+
+
+
+					/* DEBUGGING
+					printf("\r\nCopied: ");
+					//printf("%02x", packetHead[packetHeadBufPtr]);
+					int i = 0;
+					for (i = 0; i < packetHeadBufPtr; i++) {
+						printf("%02x", packetHead[i]);
+					}
+					printf("\r\nTo Pointer Location: ");
+					printf("%u", packetHeadBufPtr);
+					*/
+
+
+
+					printf("\r\nLooping");
+					while (packetHeadBufRem > 0) {
+						
+						/*DEBUGGING
+						printf("\r\n\r\nRequesting: ");
+						printf("%u", packetHeadBufRem);
+						*/
+
+						ret = recv(sClient, packetHeadBuf, packetHeadBufRem, 0); //DISABLE TO FORCE MORE CHECKS
+						//ret = recv(sClient, packetHeadBuf, 1, 0); //ENABLE TO FORCE MORE CHECKS
+						
+
+						/*DEBUGGING
+						printf("\r\nCaptured: ");
+						printf("%u", ret);
+						*/
+
+
+						packetHeadBufRem = packetHeadBufRem - ret;
+
+
+
+						/*DEBUGGING
+						printf("\r\nRemaining: ");
+						printf("%u", packetHeadBufRem);
+						*/
+						
+						
+						memcpy(packetHead + packetHeadBufPtr, packetHeadBuf, ret);
+						packetHeadBufPtr = packetHeadBufPtr + ret;
+
+
+
+
+						/*DEBUGGING
+						printf("\r\nCopied: ");
+						//printf("%02x", packetHead[packetHeadBufPtr]);
+						int i = 0;
+						for (i = 0; i < packetHeadBufPtr; i++) {
+							printf("%02x", packetHead[i]);
+						}
+						*/
+
+
+
+
+						memset(&packetHeadBuf[0], 0, 24);
+						packetHeadBuf[0];
+
+
+
+						/*DEBUGGING
+						printf("\r\nTo Pointer Location: ");
+						printf("%u", packetHeadBufPtr);
+
+						printf("\r\nRestarting Loop");
+						*/
+					}
+				}
+
 				//revData[ret] = 0x00;
 				//revData[0];
 				int i = 0;
-				printf("\r\nData: ");
-				for (i = 0; i < ret; i++) {
-					printf("%02x", revData[i]);
+				printf("\r\nHeader: ");
+				for (i = 0; i < 24; i++) {
+					printf("%02x", packetHead[i]);
 				}
 				printf("\r\n");
 
-				char enipconn[28] = { 0x65, 0x00, 0x04, 0x00, 0xAA, 0xBB, 0xCC, 0xDD, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00 };
+				describedDataLen = packetHead[2];
 
-				/*switch (revData[0]) {
-				case 0x65:
-					printf("Type: ");
-					printf("Session Request\r\n");
-					send(sClient, enipconn, 28, 0);
-					break;
-				case 0x6F:
-					printf("Type: ");
-					printf("Set Attribute Single\r\n");
-					closesocket(sClient);
-					break;
-				default:
-					printf("unkown command\r\n");
-					break;
-				}*/
+				printf("\r\nDescribed Data Length: ");
+				printf("%02x", describedDataLen);
+				printf("\r\n");
 
-				if (revData[0] == 0x65 ) {
-					printf("Type: ");
-					printf("Session Request\r\n");
-					send(sClient, enipconn, 28, 0);
-				}
-				else if (revData[0] == 0x6F ) {
-					printf("Type: ");
-					printf("Set Attribute Single\r\n");
-					closesocket(sClient);
-				}
-				else {
-					printf("unknown command\r\n");
-				}
+
+
+
+
+				
+
 			}
 
-			memset(&revData[0], 0, 255);
-			revData[0];
+			memset(&packetHeadBuf[0], 0, 24);
+			packetHeadBuf[0];
+
+			
+			
+			
+			
+			if (describedDataLen > 0) {
+
+
+
+
+
+
+				ret = recv(sClient, packetDataBuf, describedDataLen, 0);
+				Sleep(10);
+
+				/*if (ret == 0)
+				{
+				closesocket(sClient);
+				ExitThread(0);
+				}*/
+
+				if (ret > 0 && ret <= describedDataLen)
+				{
+
+					if (ret == describedDataLen) {
+						memcpy(packetData, packetDataBuf, describedDataLen);
+					}
+					else {
+						printf("\r\nDidn't get all "); 
+						printf("%u", describedDataLen);
+						printf(" bytes");
+						printf("\r\nCaptured: ");
+						printf("%u", ret);
+						packetDataBufLen = ret;
+						size_t packetDataBufPtr = 0;
+						size_t packetDataBufRem;
+						packetDataBufRem = describedDataLen - ret;
+						memcpy(packetData + packetDataBufPtr, packetDataBuf, ret);
+						packetDataBufPtr = packetDataBufPtr + ret;
+
+						memset(&packetDataBuf[0], 0, describedDataLen);
+						packetDataBuf[0];
+
+
+
+						/* DEBUGGING
+						printf("\r\nCopied: ");
+						//printf("%02x", packetHead[packetHeadBufPtr]);
+						int i = 0;
+						for (i = 0; i < packetHeadBufPtr; i++) {
+						printf("%02x", packetHead[i]);
+						}
+						printf("\r\nTo Pointer Location: ");
+						printf("%u", packetHeadBufPtr);
+						*/
+
+
+
+						printf("\r\nLooping");
+						while (packetDataBufRem > 0) {
+
+							/*DEBUGGING
+							printf("\r\n\r\nRequesting: ");
+							printf("%u", packetHeadBufRem);
+							*/
+
+							ret = recv(sClient, packetDataBuf, packetDataBufRem, 0); //DISABLE TO FORCE MORE CHECKS
+																					 //ret = recv(sClient, packetHeadBuf, 1, 0); //ENABLE TO FORCE MORE CHECKS
+
+
+																					 /*DEBUGGING
+																					 printf("\r\nCaptured: ");
+																					 printf("%u", ret);
+																					 */
+
+
+							packetDataBufRem = packetDataBufRem - ret;
+
+
+
+							/*DEBUGGING
+							printf("\r\nRemaining: ");
+							printf("%u", packetHeadBufRem);
+							*/
+
+
+							memcpy(packetData + packetDataBufPtr, packetDataBuf, ret);
+							packetDataBufPtr = packetDataBufPtr + ret;
+
+
+
+
+							/*DEBUGGING
+							printf("\r\nCopied: ");
+							//printf("%02x", packetHead[packetHeadBufPtr]);
+							int i = 0;
+							for (i = 0; i < packetHeadBufPtr; i++) {
+							printf("%02x", packetHead[i]);
+							}
+							*/
+
+
+
+
+							memset(&packetDataBuf[0], 0, describedDataLen);
+							packetDataBuf[0];
+
+
+
+							/*DEBUGGING
+							printf("\r\nTo Pointer Location: ");
+							printf("%u", packetHeadBufPtr);
+
+							printf("\r\nRestarting Loop");
+							*/
+						}
+					}
+
+					//revData[ret] = 0x00;
+					//revData[0];
+					int i = 0;
+					printf("\r\nData: ");
+					for (i = 0; i < describedDataLen; i++) {
+						printf("%02x", packetData[i]);
+					}
+					printf("\r\n");
+
+
+
+
+				}
+
+
+
+
+
+
+
+			}
+
+
+
+
+
+			bool interruptLoop = false;
+
+			switch (packetHead[0]) {
+			case 0x00:
+				printf("Type: NOP\r\n");
+				memset(&packetHead[0], 0, 24);
+				memset(&packetData[0], 0, 65511);
+				break;
+			case 0x04:
+				printf("Type: List Services\r\n");
+				memset(&packetHead[0], 0, 24);
+				memset(&packetData[0], 0, 65511);
+				break;
+			case 0x63:
+				printf("Type: List Identity\r\n");
+				memset(&packetHead[0], 0, 24);
+				memset(&packetData[0], 0, 65511);
+				break;
+			case 0x64:
+				printf("Type: List Interfaces\r\n");
+				memset(&packetHead[0], 0, 24);
+				memset(&packetData[0], 0, 65511);
+				break;
+			case 0x65:
+				printf("Type: Register Session\r\n");
+				send(sClient, register_session_resp, 28, 0);
+				memset(&packetHead[0], 0, 24);
+				memset(&packetData[0], 0, 65511);
+				break;
+			case 0x66:
+				printf("Type: Un-Register Session\r\n");
+				memset(&packetHead[0], 0, 24);
+				memset(&packetData[0], 0, 65511);
+				break;
+			case 0x6F:
+				printf("Type: Set Attribute Single\r\n");
+				// only have this because currently only set IP
+				closesocket(sClient);
+				memset(&packetHead[0], 0, 24);
+				memset(&packetData[0], 0, 65511);
+				//return 0;
+				//ExitThread(0);
+				interruptLoop = true;
+				
+				break;
+			case 0x70:
+				printf("Type: Send Unit Data\r\n");
+				memset(&packetHead[0], 0, 24);
+				memset(&packetData[0], 0, 65511);
+				break;
+			case 0x72:
+				printf("Type: Indicate Status\r\n");
+				memset(&packetHead[0], 0, 24);
+				memset(&packetData[0], 0, 65511);
+				break;
+			case 0x73:
+				printf("Type: Cancel\r\n");
+				memset(&packetHead[0], 0, 24);
+				memset(&packetData[0], 0, 65511);
+				break;
+			default:
+				printf("unkown command\r\n");
+				memset(&packetHead[0], 0, 24);
+				memset(&packetData[0], 0, 65511);
+				break;
+			}
+
+			if (interruptLoop == true) {
+				break;
+			}
 
 		}
 

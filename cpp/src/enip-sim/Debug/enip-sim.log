@@ -1,5 +1,8 @@
-﻿  enip-sim.cpp
-c:\users\user\documents\github\ethernet-ip_sim\cpp\src\enip-sim\enip-sim.cpp(92): warning C4838: conversion from 'int' to 'char' requires a narrowing conversion
-c:\users\user\documents\github\ethernet-ip_sim\cpp\src\enip-sim\enip-sim.cpp(92): warning C4309: 'initializing': truncation of constant value
+﻿  stdafx.cpp
+  enip-sim.cpp
+c:\users\user\documents\github\ethernet-ip_sim\cpp\src\enip-sim\enip-sim.cpp(49): warning C4838: conversion from 'int' to 'char' requires a narrowing conversion
+c:\users\user\documents\github\ethernet-ip_sim\cpp\src\enip-sim\enip-sim.cpp(49): warning C4309: 'initializing': truncation of constant value
+c:\users\user\documents\github\ethernet-ip_sim\cpp\src\enip-sim\enip-sim.cpp(230): warning C4018: '<=': signed/unsigned mismatch
+c:\users\user\documents\github\ethernet-ip_sim\cpp\src\enip-sim\enip-sim.cpp(331): warning C4018: '<': signed/unsigned mismatch
   enip-sim.vcxproj -> C:\Users\user\Documents\GitHub\EtherNet-IP_Sim\cpp\src\enip-sim\Debug\enip-sim.exe
   enip-sim.vcxproj -> C:\Users\user\Documents\GitHub\EtherNet-IP_Sim\cpp\src\enip-sim\Debug\enip-sim.pdb (Full PDB)
