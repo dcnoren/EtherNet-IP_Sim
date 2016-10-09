@@ -1,11 +1,14 @@
-﻿  stdafx.cpp
-  enip-sim.cpp
+﻿  enip-sim.cpp
 enip-sim.cpp(49): warning C4838: conversion from 'int' to 'char' requires a narrowing conversion
 enip-sim.cpp(49): warning C4309: 'initializing': truncation of constant value
-enip-sim.cpp(230): warning C4018: '<=': signed/unsigned mismatch
-enip-sim.cpp(331): warning C4018: '<': signed/unsigned mismatch
+enip-sim.cpp(52): warning C4838: conversion from 'int' to 'char' requires a narrowing conversion
+enip-sim.cpp(52): warning C4309: 'initializing': truncation of constant value
+enip-sim.cpp(233): warning C4018: '<=': signed/unsigned mismatch
+enip-sim.cpp(334): warning C4018: '<': signed/unsigned mismatch
   Generating code
-  All 5 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  1 of 5 functions (20.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   enip-sim.vcxproj -> C:\Users\user\Documents\GitHub\EtherNet-IP_Sim\cpp\src\enip-sim\Release\enip-sim.exe
   enip-sim.vcxproj -> C:\Users\user\Documents\GitHub\EtherNet-IP_Sim\cpp\src\enip-sim\Release\enip-sim.pdb (Full PDB)
