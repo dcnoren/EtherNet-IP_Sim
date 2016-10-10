@@ -13,6 +13,6 @@ This is really only useful for limited testing of tools you write, or to place o
 
 ## TO-DO:
 - Add in additional parsers for various EtherNet/IP commands, as well as more and smarter (=more better!) responses.
-- Currently only allows up to 255 data packets. Spec says up to 6511 may be sent.
+- Currently only allows up to 255 data packets. Spec says up to 65511 may be sent.
 - Fix a potential buffer overflow that is only mitigated by accepting only 255 data packets.
 - Linux port?
