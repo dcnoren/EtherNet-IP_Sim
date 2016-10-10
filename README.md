@@ -8,7 +8,7 @@ This is really only useful for limited testing of tools you write, or to place o
 1. Clone this.
 2. Navigate to cpp/bin directory with command prompt on Windows.
 3. Run enip-sim.exe.
-4. Communicate with <ip>:44818. For example, open RSLinx and add a PLC, specifying the IP this tool is running on.
+4. Communicate with [ip]:44818. For example, open RSLinx and add a PLC, specifying the IP this tool is running on.
 5. Source code is provided in the context of a Visual Studio 2015 Community project folder, located in cpp/src.
 
 ## TO-DO:
