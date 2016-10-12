@@ -5,7 +5,8 @@ c:\users\user\documents\github\ethernet-ip_sim\cpp\src\enip-sim\enip-sim.cpp(52)
 c:\users\user\documents\github\ethernet-ip_sim\cpp\src\enip-sim\enip-sim.cpp(52): warning C4309: 'initializing': truncation of constant value
 c:\users\user\documents\github\ethernet-ip_sim\cpp\src\enip-sim\enip-sim.cpp(53): warning C4838: conversion from 'int' to 'char' requires a narrowing conversion
 c:\users\user\documents\github\ethernet-ip_sim\cpp\src\enip-sim\enip-sim.cpp(53): warning C4309: 'initializing': truncation of constant value
-c:\users\user\documents\github\ethernet-ip_sim\cpp\src\enip-sim\enip-sim.cpp(234): warning C4018: '<=': signed/unsigned mismatch
-c:\users\user\documents\github\ethernet-ip_sim\cpp\src\enip-sim\enip-sim.cpp(335): warning C4018: '<': signed/unsigned mismatch
+c:\users\user\documents\github\ethernet-ip_sim\cpp\src\enip-sim\enip-sim.cpp(343): warning C4018: '<': signed/unsigned mismatch
+c:\users\user\documents\github\ethernet-ip_sim\cpp\src\enip-sim\enip-sim.cpp(201): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
   enip-sim.vcxproj -> C:\Users\user\Documents\GitHub\EtherNet-IP_Sim\cpp\src\enip-sim\Debug\enip-sim.exe
   enip-sim.vcxproj -> C:\Users\user\Documents\GitHub\EtherNet-IP_Sim\cpp\src\enip-sim\Debug\enip-sim.pdb (Full PDB)

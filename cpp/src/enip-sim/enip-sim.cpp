@@ -59,8 +59,8 @@ int main(int argc, char* argv[])
 	size_t packetHeadBufLen = 0;
 	char packetHeadBuf[24];
 	unsigned char packetHead[24];
-	size_t describedDataLen = 0;
-	size_t packetDataBufLen = 0;
+	long describedDataLen = 0;
+	long packetDataBufLen = 0;
 	char packetDataBuf[65511];
 	unsigned char packetData[65511];
 	while (true)
@@ -194,11 +194,19 @@ int main(int argc, char* argv[])
 				}
 				printf("\r\n");
 
-				describedDataLen = packetHead[2];
+				//describedDataLen = packetHead[2];
+
+				char receivedByte[7];
+				char *p;
+				sprintf(receivedByte, "0x%X%X", packetHead[3], packetHead[2]);
+				describedDataLen = strtol(receivedByte, &p, 16);
 
 				printf("\r\nDescribed Data Length: ");
-				printf("%02x", describedDataLen);
+				printf("%u", describedDataLen);
 				printf("\r\n");
+
+
+				
 
 
 
@@ -244,8 +252,8 @@ int main(int argc, char* argv[])
 						printf("\r\nCaptured: ");
 						printf("%u", ret);
 						packetDataBufLen = ret;
-						size_t packetDataBufPtr = 0;
-						size_t packetDataBufRem;
+						unsigned int packetDataBufPtr = 0;
+						unsigned int packetDataBufRem;
 						packetDataBufRem = describedDataLen - ret;
 						memcpy(packetData + packetDataBufPtr, packetDataBuf, ret);
 						packetDataBufPtr = packetDataBufPtr + ret;
@@ -330,10 +338,10 @@ int main(int argc, char* argv[])
 
 					//revData[ret] = 0x00;
 					//revData[0];
-					int i = 0;
+					unsigned int i = 0;
 					printf("\r\nData: ");
 					for (i = 0; i < describedDataLen; i++) {
-						printf("%02x", packetData[i]);
+						printf("%X", packetData[i]);
 					}
 					printf("\r\n");
 
